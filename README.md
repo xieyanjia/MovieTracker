@@ -1,6 +1,83 @@
-# MovieTracker
+# 🎬 Movie Tracker — 個人電影／追劇清單管理系統
 
+![Platform](https://img.shields.io/badge/Platform-Windows-blue)
+![Language](https://img.shields.io/badge/Language-C%23-purple)
+![Framework](https://img.shields.io/badge/Framework-.NET%204.8-green)
 
+---
+
+## 一、專題簡介
+
+Movie Tracker 是以 C# WinForms 開發的個人電影與追劇清單管理系統，搭配 SQLite 資料庫儲存資料。使用者可記錄想看、看過、看一半的電影與影集，並透過統計圖表了解自己的觀影習慣。
+
+---
+
+## 二、主要功能說明
+
+| 功能 | 說明 |
+|------|------|
+| ➕ 新增影片 | 填寫標題、類型、狀態、風格、10分制評分、備註、封面圖等資訊後儲存。狀態為「想看」時隱藏評分；「看過」時隱藏預計觀看日期與提醒。 |
+| ✏️ 編輯／🗑️ 刪除 | 點選列表中的影片後，點擊「編輯」修改資料，或點擊「刪除」並確認後移除。 |
+| 🔍 搜尋篩選 | 左側可依標題關鍵字、類型、狀態、風格進行搜尋篩選。 |
+| 🔔 今日提醒 | 程式啟動時自動檢查，若當天有設定提醒的影片，會彈出提醒視窗告知使用者。 |
+| 📤 匯出 CSV | 點擊「匯出 CSV」選擇儲存位置，可將所有影片資料匯出為 Excel 可開啟的 CSV 檔案。 |
+| 📊 統計圖表 | 包含觀看狀態圓餅圖、風格分佈、評分分佈長條圖、總覽統計卡片，以及 Top 10 排行榜。 |
+| 🏆 Top 10 排行榜 | 依評分排名前10名，並列名次顯示相同獎牌。切換至此頁面自動播放評分第一名的背景音樂，切換頁籤或關閉視窗時音樂自動停止。 |
+| 🌙 主題切換 | 點擊「切換淺色／深色主題」按鈕，可在深色與淺色介面之間切換。 |
+
+---
+
+## 三、執行環境需求
+
+| 項目 | 需求 |
+|------|------|
+| 作業系統 | Windows 10 / 11 |
+| 開發環境 | Visual Studio 2022 |
+| 框架 | .NET Framework 4.8 |
+| NuGet 套件 | System.Data.SQLite、LiveCharts.WinForms |
+
+---
+
+## 四、執行說明
+
+### 1. 開啟專案
+
+用 **Visual Studio 2022** 開啟 `MovieTracker.sln`。
+
+### 2. 還原 NuGet 套件
+
+Visual Studio 開啟後會自動還原套件，若沒有請手動執行：Tools → NuGet Package Manager → Package Manager Console
+輸入：Update-Package -reinstall
+### 3. 新增 Music 資料夾（背景音樂功能）
+
+在專案根目錄建立 `Music` 資料夾，並放入以下命名的 mp3 檔案：
+
+| 檔名 | 風格 |
+|------|------|
+| `action.mp3` | 動作 |
+| `comedy.mp3` | 喜劇 |
+| `romance.mp3` | 愛情 |
+| `horror.mp3` | 恐怖 |
+| `scifi.mp3` | 科幻 |
+| `drama.mp3` | 劇情 |
+| `anime.mp3` | 動畫 |
+| `other.mp3` | 其他 |
+
+> 免費音樂可至 [Pixabay](https://pixabay.com/music/) 下載，若無 mp3 檔案程式仍可正常執行，只是不會播放背景音樂。
+
+### 4. 執行程式
+
+按下 **F5** 或點擊上方「▶ 開始」按鈕即可執行。
+
+---
+
+## 五、使用套件
+
+- [System.Data.SQLite](https://system.data.sqlite.org/) — SQLite 資料庫
+- [LiveCharts.WinForms](https://v0.lvcharts.com/) — 統計圖表
+- [Pixabay](https://pixabay.com/music/) — 免費背景音樂
+
+---
 
 <img width="1264" height="690" alt="image" src="https://github.com/user-attachments/assets/7027b826-8557-4b24-b4b1-9c94f796f2d6" />
 <img width="486" height="587" alt="image" src="https://github.com/user-attachments/assets/d9730a43-b3a8-4eba-9a08-f8269b83e18a" />
