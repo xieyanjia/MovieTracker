@@ -153,7 +153,7 @@ namespace MovieTracker
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Title", HeaderText = "📽️ 標題" });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Type", HeaderText = "類型" });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Status", HeaderText = "狀態" });
-            grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Rating", HeaderText = "評分" });
+            grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Rating", HeaderText = "評分", ValueType = typeof(int) });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Genre", HeaderText = "風格" });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Notes", HeaderText = "備註" });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "AddedDate", HeaderText = "新增日期" });
@@ -176,7 +176,7 @@ namespace MovieTracker
             {
                 Location = new Point(10, 10),
                 Size = new Size(230, 150),
-                BackColor = Color.FromArgb(40, 40, 60),
+                BackColor = Color.FromArgb(24, 24, 37),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BorderStyle = BorderStyle.None
             };
@@ -207,6 +207,15 @@ namespace MovieTracker
             searchBox.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) LoadMovies(); };
             grid.CellDoubleClick += (s, e) => BtnEdit_Click(s, e);
             btnTheme.Click += BtnTheme_Click;
+            grid.CellFormatting += (s, e) =>
+            {
+                if (e.ColumnIndex == grid.Columns["Rating"].Index && e.Value != null)
+                {
+                    int rating = Convert.ToInt32(e.Value);
+                    e.Value = rating == 0 ? "-" : $"{rating} / 10";
+                    e.FormattingApplied = true;
+                }
+            };
         }
 
         private ComboBox CreateCombo(string[] items, int y)
@@ -254,8 +263,7 @@ namespace MovieTracker
             grid.Rows.Clear();
             foreach (var m in currentMovies)
             {
-                string score = $"{m.Rating} / 10";
-                grid.Rows.Add(m.Id, m.Title, m.Type, m.Status, score, m.Genre, m.Notes, m.AddedDate);
+                grid.Rows.Add(m.Id, m.Title, m.Type, m.Status, m.Rating, m.Genre, m.Notes, m.AddedDate);
             }
 
             lblCount.Text = $"共 {currentMovies.Count} 部影片";
@@ -275,7 +283,19 @@ namespace MovieTracker
             var movie = currentMovies.Find(m => m.Id == id);
             var form = new AddEditForm(movie);
             if (form.ShowDialog() == DialogResult.OK)
+            {
                 LoadMovies();
+                // 編輯完後重新選取同一部影片
+                foreach (DataGridViewRow row in grid.Rows)
+                {
+                    if ((int)row.Cells["Id"].Value == id)
+                    {
+                        row.Selected = true;
+                        grid.CurrentCell = row.Cells["Title"];
+                        break;
+                    }
+                }
+            }
         }
 
         private void BtnDelete_Click(object sender, EventArgs e)
@@ -286,7 +306,16 @@ namespace MovieTracker
                 int id = (int)grid.SelectedRows[0].Cells["Id"].Value;
                 Database.Delete(id);
                 LoadMovies();
-                ClearDetail();
+                if (grid.Rows.Count > 0)
+                {
+                    grid.Rows[0].Selected = true;
+                    grid.CurrentCell = grid.Rows[0].Cells["Title"];
+                    Grid_SelectionChanged(null, null);
+                }
+                else
+                {
+                    ClearDetail();
+                }
             }
         }
 
@@ -396,11 +425,11 @@ namespace MovieTracker
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 var sb = new System.Text.StringBuilder();
-                sb.AppendLine("ID,標題,類型,狀態,評分,風格,備註,封面,新增日期,預計觀看日期,提醒");
+                sb.AppendLine("標題,類型,狀態,評分,風格,備註,新增日期,預計觀看日期,提醒");
 
                 foreach (var m in Database.GetAll())
                 {
-                    sb.AppendLine($"{m.Id},\"{m.Title}\",{m.Type},{m.Status},{m.Rating},{m.Genre},\"{m.Notes}\",\"{m.CoverUrl}\",{m.AddedDate},{m.WatchDate},{(m.Reminder ? "是" : "否")}");
+                    sb.AppendLine($"\"{m.Title}\",{m.Type},{m.Status},{m.Rating},{m.Genre},\"{m.Notes}\",{m.AddedDate},{m.WatchDate},{(m.Reminder ? "是" : "否")}");
                 }
 
                 System.IO.File.WriteAllText(sfd.FileName, sb.ToString(), System.Text.Encoding.UTF8);
@@ -418,14 +447,19 @@ namespace MovieTracker
             lblDetailTitle.Text = m.Title;
             lblDetailType.Text = "類型：" + m.Type;
             lblDetailStatus.Text = "狀態：" + m.Status;
-            lblDetailRating.Text = $"⭐ {m.Rating} / 10";
-            lblDetailGenre.Text = "風格：" + m.Genre;
+            lblDetailRating.Text = m.Rating == 0 ? "評分：尚未觀看" : $"⭐ {m.Rating} / 10"; lblDetailGenre.Text = "風格：" + m.Genre;
             lblDetailNotes.Text = "備註：\n" + m.Notes;
 
-            if (!string.IsNullOrEmpty(m.CoverUrl) && System.IO.File.Exists(m.CoverUrl))
+            if (!string.IsNullOrEmpty(m.CoverUrl))
             {
-                try { picDetail.Image = Image.FromFile(m.CoverUrl); }
-                catch { picDetail.Image = null; }
+                string fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", m.CoverUrl);
+                if (System.IO.File.Exists(fullPath))
+                {
+                    try { picDetail.Image = Image.FromFile(fullPath); }
+                    catch { picDetail.Image = null; }
+                }
+                else
+                    picDetail.Image = null;
             }
             else
             {

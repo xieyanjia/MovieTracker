@@ -88,6 +88,19 @@ namespace MovieTracker
         {
             var page = new TabPage("📋 觀看狀態") { BackColor = Color.FromArgb(24, 24, 37) };
 
+            if (movies.Count == 0)
+            {
+                page.Controls.Add(new Label
+                {
+                    Text = "還沒有任何影片！",
+                    ForeColor = Color.FromArgb(180, 180, 200),
+                    Font = new Font("Segoe UI", 12f),
+                    Location = new Point(20, 20),
+                    AutoSize = true
+                });
+                return page;
+            }
+
             var statuses = new[] { "想看", "看過", "看一半" };
             var chart = new PieChart { Dock = DockStyle.Fill };
             var series = new SeriesCollection();

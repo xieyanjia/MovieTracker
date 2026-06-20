@@ -49,7 +49,9 @@ namespace MovieTracker
 
             // Genre & Rating
             AddLabel("風格", 20, y);
-            AddLabel("評分", 240, y); y += 25;
+            var lblRating = new Label { Text = "評分", ForeColor = Color.FromArgb(180, 180, 200), Location = new Point(240, y), AutoSize = true };
+            this.Controls.Add(lblRating);
+            y += 25;
             cmbGenre = AddCombo(new[] { "動作", "喜劇", "愛情", "恐怖", "科幻", "劇情", "動畫", "其他" }, 20, y, 190);
             cmbRating = AddCombo(new[] { "1分", "2分", "3分", "4分", "5分", "6分", "7分", "8分", "9分", "10分" }, 240, y, 190);
             y += 40;
@@ -75,6 +77,10 @@ namespace MovieTracker
                 chkReminder.Visible = show;
                 lblWatchDate.Visible = show;
                 lblReminder.Visible = show;
+
+                bool showRating = cmbStatus.SelectedItem.ToString() != "想看";
+                cmbRating.Visible = showRating;
+                lblRating.Visible = showRating;
             };
 
             bool initShow = cmbStatus.SelectedItem.ToString() != "看過";
@@ -83,6 +89,9 @@ namespace MovieTracker
             lblWatchDate.Visible = initShow;
             lblReminder.Visible = initShow;
 
+            bool initShowRating = cmbStatus.SelectedItem.ToString() != "想看";
+            cmbRating.Visible = initShowRating;
+            lblRating.Visible = initShowRating;
             // Cover
             AddLabel("封面圖片路徑（選填）", 20, y); y += 25;
             txtCover = new TextBox { Location = new Point(20, y), Width = 340, BackColor = Color.FromArgb(40, 40, 60), ForeColor = Color.White, BorderStyle = BorderStyle.FixedSingle };
@@ -141,7 +150,19 @@ namespace MovieTracker
         {
             var ofd = new OpenFileDialog { Filter = "圖片檔案|*.jpg;*.jpeg;*.png;*.bmp;*.gif" };
             if (ofd.ShowDialog() == DialogResult.OK)
-                txtCover.Text = ofd.FileName;
+            {
+                string imagesDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+                if (!System.IO.Directory.Exists(imagesDir))
+                    System.IO.Directory.CreateDirectory(imagesDir);
+
+                string fileName = System.IO.Path.GetFileName(ofd.FileName);
+                string destPath = System.IO.Path.Combine(imagesDir, fileName);
+
+                if (!System.IO.File.Exists(destPath))
+                    System.IO.File.Copy(ofd.FileName, destPath);
+
+                txtCover.Text = fileName; // 只存檔名
+            }
         }
 
         private void UpdatePreview() { }
@@ -162,7 +183,7 @@ namespace MovieTracker
                 Type = cmbType.SelectedItem.ToString(),
                 Status = cmbStatus.SelectedItem.ToString(),
                 Genre = cmbGenre.SelectedItem.ToString(),
-                Rating = cmbRating.SelectedIndex + 1,
+                Rating = cmbStatus.SelectedItem.ToString() == "想看" ? 0 : cmbRating.SelectedIndex + 1,
                 Notes = txtNotes.Text.Trim(),
                 CoverUrl = txtCover.Text.Trim(),
                 AddedDate = DateTime.Now.ToString("yyyy-MM-dd")
