@@ -145,9 +145,7 @@ namespace MovieTracker
             };
 
             chart.AxisX.Add(new Axis { Labels = labels, Foreground = System.Windows.Media.Brushes.White });
-            chart.AxisY.Add(new Axis { Title = "數量", Foreground = System.Windows.Media.Brushes.White, MinValue = 0 });
-            chart.BackColor = Color.FromArgb(24, 24, 37);
-
+            chart.AxisY.Add(new Axis { Title = "數量", Foreground = System.Windows.Media.Brushes.White, MinValue = 0, Separator = new LiveCharts.Wpf.Separator { Step = 1 } }); chart.BackColor = Color.FromArgb(24, 24, 37);
             page.Controls.Add(chart);
             return page;
         }
@@ -192,8 +190,7 @@ namespace MovieTracker
             };
 
             chart.AxisX.Add(new Axis { Labels = labels, Foreground = System.Windows.Media.Brushes.White });
-            chart.AxisY.Add(new Axis { Title = "數量", Foreground = System.Windows.Media.Brushes.White, MinValue = 0 });
-            chart.BackColor = Color.FromArgb(24, 24, 37);
+            chart.AxisY.Add(new Axis { Title = "數量", Foreground = System.Windows.Media.Brushes.White, MinValue = 0, Separator = new LiveCharts.Wpf.Separator { Step = 1 } }); chart.BackColor = Color.FromArgb(24, 24, 37);
 
             page.Controls.Add(chart);
             return page;
