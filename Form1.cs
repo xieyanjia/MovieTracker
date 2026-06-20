@@ -406,7 +406,7 @@ namespace MovieTracker
                         if (child is Label l)
                             l.ForeColor = l.Font.Bold ? (isDarkMode ? Color.FromArgb(203, 166, 247) : Color.FromArgb(100, 80, 160)) : textColor;
                         else if (child is PictureBox pic)
-                            pic.BackColor = inputBg;
+                            pic.BackColor = isDarkMode ? Color.FromArgb(24, 24, 37) : Color.FromArgb(255, 255, 255);
                     }
                 }
             }
